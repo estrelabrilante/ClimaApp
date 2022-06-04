@@ -15,6 +15,9 @@ class WeatherViewController: UIViewController,UITextFieldDelegate {
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var cityLabel: UILabel!
+    //inialise structure weatherManager
+    let weatherManager = WeatherManager();
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,6 +36,10 @@ class WeatherViewController: UIViewController,UITextFieldDelegate {
     //user end editing that get notified to delegate
     func textFieldDidEndEditing(_ textField: UITextField) {
         //use location entered in textField before resetting textField thereby checking weather data
+        //by "if let" provide a definite string
+        if let city = searchTextField.text{
+            weatherManager.fetchWeather(cityName: city)
+        }
         
         //clear or reset search textField while clicking return key / search icon
         searchTextField.text = ""
