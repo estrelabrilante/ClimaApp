@@ -3,64 +3,69 @@
 //  Clima
 //
 //  Created by Angela Yu on 01/09/2019.
-// learned by Shynu Mary Varghese
 //  Copyright © 2019 App Brewery. All rights reserved.
 //
 
 import UIKit
 
-class WeatherViewController: UIViewController,UITextFieldDelegate {
+class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManagerDelegate {
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
-    @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var cityLabel: UILabel!
-    //inialise structure weatherManager
-    let weatherManager = WeatherManager();
     
+    @IBOutlet weak var searchTextField: UITextField!
     
+    var weatherManager = WeatherManager();
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Do any additional setup after loading the view.
         
-    //textField should report back to delegate (which is current viewcontroller)
-        searchTextField.delegate = self;
+       //textfield will report to self which is weather viewController
+        searchTextField.delegate = self
+        //set class as delegtae
+        weatherManager.delegate = self;
     }
-    // when user click on Return Key , textField should report to delegate
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        //disappear keyboard when user Click Return
+
+    @IBAction func searchPressed(_ sender: UIButton) {
+       
+        print(searchTextField.text!)
+        
+        //dismiss keyboard
         searchTextField.endEditing(true)
-        //print result in console
-        print(searchTextField.text!);
-        return true;
+        
     }
-    //user end editing that get notified to delegate
+    //when the user click GO key in soft keyboard
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+       
+        print(searchTextField.text!)
+        //dismiss keyboard
+        searchTextField.endEditing(true)
+        return true
+    }
+  //clear textField after end editing is true.
     func textFieldDidEndEditing(_ textField: UITextField) {
-        //use location entered in textField before resetting textField thereby checking weather data
-        //by "if let" provide a definite string
+        //use searchTextField.text to get the weather for that city.
         if let city = searchTextField.text{
             weatherManager.fetchWeather(cityName: city)
         }
-        
-        //clear or reset search textField while clicking return key / search icon
+        //resetting
         searchTextField.text = ""
     }
-//when user press search button
-    @IBAction func searchPressed(_ sender: UIButton) {
-        //disappear keyboard when user Click search button
-        searchTextField.endEditing(true);
-        print(searchTextField.text!)
-    }
-    // userful for validation in a textField
+    //validation on user typed
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        if(textField.text != ""){
+        //any textField could triggered
+        if textField.text != ""{
             return true
         }
         else{
-            textField.placeholder = "Type something to search"
+            textField.placeholder = "Type something here"
             return false
         }
-        
-    }
-    
 }
+    //implementation of delegate-protocol method
+    func didUpdateWeather(weather: WeatherModel){
+        print(weather.temperature)
+    }
 
+}
