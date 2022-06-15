@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManagerDelegate {
+class WeatherViewController: UIViewController {
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -26,44 +26,53 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
         //set class as delegtae
         weatherManager.delegate = self;
     }
+}
 
-    @IBAction func searchPressed(_ sender: UIButton) {
-       
-        print(searchTextField.text!)
+    
+    //MARK: - UITextField Delegate
+    
+    extension WeatherViewController: UITextFieldDelegate {
         
-        //dismiss keyboard
-        searchTextField.endEditing(true)
-        
-    }
-    //when the user click GO key in soft keyboard
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-       
-        print(searchTextField.text!)
-        //dismiss keyboard
-        searchTextField.endEditing(true)
-        return true
-    }
-  //clear textField after end editing is true.
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        //use searchTextField.text to get the weather for that city.
-        if let city = searchTextField.text{
-            weatherManager.fetchWeather(cityName: city)
-        }
-        //resetting
-        searchTextField.text = ""
-    }
-    //identity of object caused delegate method: TextField
-    //validation on user typed
-    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        //any textField could triggered
-        if textField.text != ""{
+        @IBAction func searchPressed(_ sender: UIButton) {
+           
+            print(searchTextField.text!)
+            
+            //dismiss keyboard
+            searchTextField.endEditing(true)
+            
+        }        //when the user click GO key in soft keyboard
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+           
+            print(searchTextField.text!)
+            //dismiss keyboard
+            searchTextField.endEditing(true)
             return true
         }
-        else{
-            textField.placeholder = "Type something here"
-            return false
+      //clear textField after end editing is true.
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            //use searchTextField.text to get the weather for that city.
+            if let city = searchTextField.text{
+                weatherManager.fetchWeather(cityName: city)
+            }
+            //resetting
+            searchTextField.text = ""
         }
+        //identity of object caused delegate method: TextField
+        //validation on user typed
+        func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+            //any textField could triggered
+            if textField.text != ""{
+                return true
+            }
+            else{
+                textField.placeholder = "Type something here"
+                return false
+            }
+    }
 }
+    
+  //MARK: - WeatherManagerDelegate method
+extension WeatherViewController: WeatherManagerDelegate{
     //implementation of delegate-protocol method
     /*
      func didUpdateWeather(weather: WeatherModel) {
@@ -85,5 +94,7 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
     func didFailWithError(error: Error) {
         print(error)
     }
-
 }
+    
+
+
