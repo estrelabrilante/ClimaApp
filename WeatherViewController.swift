@@ -52,6 +52,7 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
         //resetting
         searchTextField.text = ""
     }
+    //identity of object caused delegate method: TextField
     //validation on user typed
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         //any textField could triggered
@@ -64,8 +65,25 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
         }
 }
     //implementation of delegate-protocol method
-    func didUpdateWeather(weather: WeatherModel){
+    /*
+     func didUpdateWeather(weather: WeatherModel) {
         print(weather.temperature)
+    }
+*/
+    //delegate method naming convention: identity of object caused delegate method: Weather Manager
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
+        //Display using DispatchQueue main async
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = weather.temperatureString;
+            self.conditionImageView.image = UIImage(systemName: weather.conditionName);
+            self.cityLabel.text = weather.cityName;
+            
+        }
+        
+        //print(weather.temperature)
+    }
+    func didFailWithError(error: Error) {
+        print(error)
     }
 
 }
