@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class WeatherViewController: UIViewController {
 
@@ -16,18 +17,51 @@ class WeatherViewController: UIViewController {
     
     @IBOutlet weak var searchTextField: UITextField!
     
+   
     var weatherManager = WeatherManager();
+    //hold data of current GPSlocation of phone.
+    let locationManager = CLLocationManager();
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
+        locationManager.delegate = self;
+        // location is private data so request to user
+        locationManager.requestWhenInUseAuthorization();
+        //one-time delivery of users current location
+        locationManager.requestLocation();
        //textfield will report to self which is weather viewController
         searchTextField.delegate = self
         //set class as delegtae
         weatherManager.delegate = self;
+        
+    }
+    
+    @IBAction func locationPressed(_ sender: UIButton) {
+        locationManager.requestLocation();
     }
 }
+//MARK: - //how to hold location once location manager found location of the user --- didUpdateLocation methods
 
+//GPS location bsed update UI
+extension WeatherViewController: CLLocationManagerDelegate{
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        //last location in the array
+        if let location = locations.last{
+            locationManager.stopUpdatingLocation();
+            let lat = location.coordinate.latitude;
+            let lon = location.coordinate.longitude;
+            print(lat);
+            print(lon);
+            weatherManager.fetchWeather(latitu: lat, longtitu: lon);
+            print("got location");
+        }
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print(error)
+    }
+    
+}
     
     //MARK: - UITextField Delegate
     
@@ -73,12 +107,18 @@ class WeatherViewController: UIViewController {
     
   //MARK: - WeatherManagerDelegate method
 extension WeatherViewController: WeatherManagerDelegate{
+    
     //implementation of delegate-protocol method
     /*
      func didUpdateWeather(weather: WeatherModel) {
         print(weather.temperature)
     }
 */
+  
+    
+    
+    
+    
     //delegate method naming convention: identity of object caused delegate method: Weather Manager
     func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
         //Display using DispatchQueue main async
